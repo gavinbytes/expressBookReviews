@@ -46,9 +46,15 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
   let isbn = req.params.isbn;
   let reviews = books[isbn].reviews;
   let username = req.session.authorization['username'];
-  reviews[username] = req.query.review;
-  // any user review will replace the current review
+  let newRev = {};
+  newRev[username] = req.query.review;
+  reviews = Object.assign(reviews, newRev);
   res.send("The review for the book with ISBN" + (' ') + (isbn) + " added.updated.");
+  // kinda works
+  // only updates the last person who signs in
+  // not sure if testing wrong
+  // or if i need to do something with jwt.
+  // probably the ladder
 });
 
 module.exports.authenticated = regd_users;
