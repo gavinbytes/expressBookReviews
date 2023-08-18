@@ -32,18 +32,23 @@ public_users.post("/register", (req, res) => {
 
 // Get the book list available in the shop
 public_users.get('/', function (req, res) {
-  res.send(JSON.stringify(books, null, 4));
+  const get_books = new Promise((resolve, reject) => {
+    resolve(res.send(JSON.stringify(books, null, 4)));
+  });
+
+  get_books.then(() => console.log("Promise for task 10 resolved!"));
 });
 
 // Get book details based on ISBN
-public_users.get('/isbn/:isbn', function (req, res) {
-  let isbn = req.params.isbn;
+public_users.get('/isbn/:isbn', async function (req, res) {
+  const isbn = await req.params.isbn;
+
   res.send(books[isbn]);
 });
 
 // Get book details based on author
-public_users.get('/author/:author', function (req, res) {
-  let author = req.params.author;
+public_users.get('/author/:author', async function (req, res) {
+  let author = await req.params.author;
   let filteredBooks = [];
   for (const isbn in books) {
     if (books[isbn].author === author) filteredBooks.push(books[isbn]);
@@ -52,8 +57,8 @@ public_users.get('/author/:author', function (req, res) {
 });
 
 // Get all books based on title
-public_users.get('/title/:title', function (req, res) {
-  let title = req.params.title;
+public_users.get('/title/:title', async function (req, res) {
+  let title = await req.params.title;
   let bookByTitle = [];
 
   for (const isbn in books) {

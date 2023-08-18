@@ -44,17 +44,34 @@ regd_users.post("/login", (req, res) => {
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
   let isbn = req.params.isbn;
-  let reviews = books[isbn].reviews;
-  let username = req.session.authorization['username'];
-  let newRev = {};
-  newRev[username] = req.query.review;
-  reviews = Object.assign(reviews, newRev);
-  res.send("The review for the book with ISBN" + (' ') + (isbn) + " added.updated.");
-  // kinda works
-  // only updates the last person who signs in
-  // not sure if testing wrong
-  // or if i need to do something with jwt.
-  // probably the ladder
+  let book = books[isbn];
+
+  if (book) {
+    let review = req.query.review;
+    let reviewer = req.session.authorization['username'];
+
+    if (review) {
+      book.reviews[reviewer] = review;
+      books[isbn] = book;
+    }
+    res.send("The review for the book with ISBN" + (' ') + (isbn) + " added/updated.");
+  } else {
+    res.send("Unable to find this ISBN!");
+  }
+});
+
+// Delete a book review
+regd_users.delete("/auth/review/:isbn", (req, res) => {
+  let isbn = req.params.isbn;
+  let book = books[isbn];
+
+  if (book) {
+    let reviewer = req.session.authorization['username'];
+    delete book.reviews[reviewer];
+    res.send("The review for the book with the ISBN " + (' ') + (isbn) + " has been DELETED");
+  } else {
+    res.send("Unable to find this ISBN!");
+  }
 });
 
 module.exports.authenticated = regd_users;
